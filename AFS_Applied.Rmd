@@ -1,0 +1,398 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\title{AFS}
+\authors{Larchevêque Valentin et Thibaut Balsan}
+\begin{document}
+
+
+
+
+```{r}
+##Packages
+library(ggplot2)
+
+
+library("ggrepel")
+source("AFS_functions_finale.R")
+
+library(ggpmisc)
+A<-AF_corres(Tps_sect_2020)
+A@lbd
+
+
+
+AF_plot(A,1,2,"debbilité",Title = "Figure 2: Analyse des correspondances Tps Travail/secteur 2020")
+ggsave("Analyse des correspondances.jpg")
+##Comparaison des CSP_par Âge entre Homme et femme (INSEE 2020)
+
+Hom_fem<-read.table("Hom_fem.csv",header = T,dec = ",",sep = "\t",quote = "{")
+View(Hom_fem)
+
+Hom_fem
+Femme<-Hom_fem[1:6,-1]
+Homme<-Hom_fem[7:12,-1]
+
+RN_comp_csp<-Hom_fem[1:6,1]
+CN_comp_csp<-colnames(Hom_fem)[-1]
+
+Femme<-matrix(as.numeric(gsub(",",".",(gsub("\\s+","",as.matrix(Femme))))),ncol=6,nrow=6)
+Homme<-matrix(as.numeric(gsub(",",".",(gsub("\\s+","",as.matrix(Homme))))),ncol=6,nrow=6)
+
+colnames(Homme)<-CN_comp_csp
+row.names(Homme)<-RN_comp_csp
+
+Comp_H_F_CSP_AGE<-AFS_comp(Homme,Femme)
+AF_plot(Comp_H_F_CSP_AGE,1,2)
+##Les hommes deviennent plus jeune ouvriers et les femmes plus jeunes employé
+##La ou y a le moin de diff: agriculteurs
+
+
+
+
+```
+
+
+
+
+II PARTIE PRATIQUE:
+
+```{r}
+source("AFS_functions_finale.R")
+
+
+
+##Différence salaires Homme/Femme 
+Salaires<-read.csv("SAL02.csv",header = T,row.names = 1,dec=",",sep="\t")
+View(Salaires)
+
+salaire_F<-Salaires[,6:8]
+salaire_H<-Salaires[,10:12]
+row.names(salaire_F)
+RN_salaire<-c("PROF LIB","INGE","PROFESS INTERMEDIAIRES","EMP","OUVRIERS","CLERGE")
+
+Salaire.F<-as.matrix(salaire_F,ncol=3,nrow=13)
+
+Salaire.H<-as.matrix(salaire_H,ncol=3,nrow=13)
+
+length(RN_salaire)
+row.names(Salaire.H)<-row.names(salaire_F)
+row.names(Salaire.F)<-row.names(salaire_F)
+
+
+AFS_Salaire_Homme_femme<-AFS_comp(Salaire.H,Salaire.F)
+AF_plot(AFS_Salaire_Homme_femme,1,2,"in")
+##La ou y a le plus de diff: professions libérales et clergé, les hommes sont payés plus
+QLT(AFS_Salaire_Homme_femme,1:2,"ind")
+
+QLT()
+
+##Ça c'est de la représentation!! C'est se présenter!!
+##On en parle du clergé ? 
+
+##Produit des marges CSP/AGE
+```
+
+
+```{r}
+```
+
+
+```{r}
+
+##Aplication au tableau final de données transformées
+## set plot bounds, no default ornaments
+##Comparaison au produit des marges 
+source("AFS_functions_finale.R")
+Temps_travail_Secteur_2020<-read.table("TT07_2020.xls",header = T,sep="\t",dec=",",row.names = 1)
+Temps_travail_Secteur_2016<-read.table("TT07_2016.csv",header = T,sep ="\t",dec = ",",row.names = 1)
+View(Temps_travail_Secteur_2020)
+
+
+Tps
+
+
+
+Temps_diff<-AFS_comp(Tps_sect_2020,Tps_sect_2016)
+AF_plot(Temps_diff,1,2,choix = "Test",Title = "Figure 3: Différences temps de travail/secteur entre 2016 et 2020")
+
+
+
+Tps_sect_2020<-matrix(as.numeric(gsub(",",".",(gsub("\\s+","",as.matrix(Temps_travail_Secteur_2020))))),ncol=5,nrow=7)
+Tps_sect_2016<-matrix(as.numeric(gsub(",",".",(gsub("\\s+","",as.matrix(Temps_travail_Secteur_2016))))),ncol=5,nrow=7)
+
+
+row.names(Tps_sect_2020)<-RN_abre
+row.names(Tps_sect_2016)<-RN_abre
+colnames(Tps_sect_2020)<-colnames(Temps_travail_Secteur_2020)
+colnames(Tps_sect_2016)<-colnames(Temps_travail_Secteur_2016)
+dim(Tps_sect_2020)
+
+Tps_2020_corres<-AFS_corres(Tps_sect_2020)
+
+row.names(Temps_travail_Secteur_2016)
+
+AF_plot(Tps_2020_corres,1,2,"test",Title = "Figure 1: AFS des correspondances de temps de travail/secteur")
+
+RN_abre<-c("INDUST","TERTIAIRE",RN_abre[c(-1,-2)],"AUTRE SERV")
+Tps_2020_corres@CTR
+
+
+RN_abre
+
+length(RN_abre)
+row.names(Tps_sect)
+poids_colonne(Tps_sect)
+length(Temps_travail_Secteur[,1])
+View(Temps_travail_Secteur)
+ggsave("Tps_sect.jpg")
+ggsave("Diff_tps.jpg")
+
+Q_corres<-QLT(Tps_2020_corres,c(1,2))
+write.table(Q_corres,"Qual_corres4.csv",)
+T_S_corres@CTR
+
+
+CTR_corres<-Tps_2020_corres@CTR
+write.csv(CTR_corres,"CTR_corres.csv")
+
+CTR_diff<-Temps_diff@CTR
+write.csv(CTR_diff,"CTR_diff.csv")
+
+
+CTR_echange<-Mondial_Exchange@CTR
+write.csv(CTR_echange,"CTR_echange.csv")
+
+CTR_trans<-transit@CTR
+
+write.csv(CTR_trans,"CTR_trans.csv")
+
+Q_echanges
+Cont_corres
+Cont_diff
+Cont_echange
+Cont_trans
+
+
+
+
+Cont_corres<-matrix(Tps_2020_corres@CONTR)
+row.names(Cont_corres)<-row.names(Tps_2020_corres@t)
+
+CTR_corres
+CTR_diff
+CTR_echange
+CTR_trans
+
+
+
+Q_echanges
+
+Q_corres
+
+sum(CTR_echange[,1])
+
+Cont_diff<-matrix(Temps_diff@CONTR)
+row.names(Cont_diff)<-row.names(Temps_diff@t)
+
+
+
+Cont_echange<-matrix(Mondial_Exchange@CONTR)
+row.names(Cont_echange)<-row.names(Mondial_Exchange@t)
+
+
+
+Cont_trans<-matrix(transit@CONTR)
+row.names(Cont_trans)<-row.names(transit@t)
+
+write.csv(Cont_trans,"Cont_tr.csv",sep="\t")
+
+
+write.csv(QLT_diff,"Qual_diff.csv")
+write.csv(Q)
+
+
+
+
+poids_lignes(Tps_sect)
+colnames(Tps_sect)
+
+selection_des_axes<-data.frame("Rang"=(1:5),"Proportion d'inertie"=T_S_corres@lbd[1:5]/sum(T_S_corres@t^2),"Proportion d'inertie cumulee"=cumsum(T_S_corres@lbd[1:5]/sum(T_S_corres@t^2)))
+  View(selection_des_axes)
+write.csv(selection_des_axes,"VP_corres4.csv")
+
+QLT_diff<-QLT(Temps_diff,c(1,2))
+CRT_diff<-Temps_diff@CTR[,1:2]
+colnames(CRT_diff)<-c("AXE 1","AXE 2")
+write.table(CRT_diff,"CTRdiff.csv")
+
+sum(turn_to_freq(Tps_sect_2016)[,"De.0.à.moins.de.30.heures"])
+QLT_diff
+sum(turn_to_freq(Tps_sect_2020)[,"De.0.à.moins.de.30.heures"])
+
+
+
+```
+
+
+```{r}
+source("AFS_functions_finale.R")
+CSP_AGE_2020<-read.table("CSS01.csv",dec=",",sep = "\t",quote="{",header = T,row.names = 1)
+CN_csp
+View(CSP_AGE_2020)
+CSP_AGE
+RN_csp
+RN_csp<-row.names(CSP_AGE_2020)[-1]
+CN_csp<-colnames(CSP_AGE_2020)[-c(2,5)]
+CSP_AGE<-matrix(as.numeric(gsub(",",".",(gsub("\\s+","",as.matrix(CSP_AGE_2020[-1,-c(2,5)]))))),ncol=5,nrow=6)
+
+CSP_AGE
+row.names(CSP_AGE)<-RN_csp
+colnames(CSP_AGE)<-CN_csp
+
+CSP_corres<-AFS_corres(CSP_AGE)
+
+par(mfrow=c(1,2),2)
+AF_plot(CSP_corres,1,2,choix="rlamerde",Title = "Figure 1: AFS des correspondances CSP/AGE 2020")
+
+
+ggsave("CSP_corr.jpg")
+Q_csp_va<-QLT(CSP_corres,c(1,2),"var")
+ggsave("")
+
+A<-AF_corres(CSP_AGE)
+Q_csp_va
+AF_plot(AB,1,2,"bryaucachot",Title="Figure 2: Analyse factorielle des correspondances, CSP/AGE 2020")
+##La ou l'age impact le plus la CSP c'est le clergé et l'agriculture, clergé très jeunes,
+##agriculture plutot vieux 
+
+##Effet guttman sur les variables: plus on est plus on est jeune moins on est qualifié, plus on est vieux plus on est, ou on est agriculteur
+
+##Clergé donnée aberrante
+
+sum(A@lbd)
+sum(CSP_corres@t^2)
+A@CTR
+CSP_corres@CTR
+CSP_corres@W_vects[1,1]^2
+CSP_corres@W_vects[1,1]^2
+CSP_corres@cos2
+CSP_corres@CTR
+
+AB<-AF(turn_to_freq(CSP_AGE),mI=c(45,1,1,1,1,1),mJ=c(1,1,1,1,1))
+dim(CSP_AGE)
+
+row.names(AB@t)
+
+```
+
+
+```{r}
+
+
+##Tableau d'échange commerciaux mondiaux (source OMC 2000)
+Tableau_échange<-c(6.76, 2.66, 3.31, 0.11, 0.20, 0.41, 3.61,17.07,
+                   3.34, 0.87 ,0.70, 0.05, 0.05, 0.05, 0.32, 5.43,
+                   4.24, 1.04 ,29.69 ,2.20, 1.08, 1.05, 3.21 ,42.98,
+                   0.17, 0.07, 2.19, 1.02 ,0.05, 0.07, 0.29, 3.91,
+                   0.31, 0.06, 1.04 ,0.03, 0.20 ,0.03 ,0.28, 2.05,
+                   0.46, 0.04, 0.63 ,0.02 ,0.15 ,0.26, 1.33, 3.11,
+                   6.70 ,0.63, 4.60, 0.23, 0.39 ,0.67, 11.87 ,25.46,
+                   21.98, 5.37, 42.16, 3.66 ,2.12, 2.54 ,20.92, 100)
+Tableau_echange<-matrix(Tableau_échange,8,8,byrow=T)
+
+RN_echange<-c(
+              "Am.Nord",
+              "Am.latine",
+              "Europe occidentale",
+              "Europe c./o.,Etats baltes,CEI","Afrique", "Moyen Orient" ,"Asie", "Monde")
+CN_echange<-RN_echange
+row.names(Tableau_echange)<-RN_echange
+colnames(Tableau_echange)<-CN_echange
+Tableau_echange
+
+Mondial_Exchange<-AFS_echanges(Tableau_echange)
+  AF_plot(Mondial_Exchange,2,3,Title = " Figure 4: AFS des échanges commerciaux mondiaux",choix="bryaucachot")
+jpeg("Graphe_echange.png")
+ggsave()
+ggsave("plot_trans_2_3.jpg",)
+##AXE 2: riche vs pas riche, plus t'es riche plus t'es à droite (non c'est trop facile je la ferai même pas)
+##AXE 3:importateurs/exportateurs
+##Les les pays le plus au centre sont ceux qui sont les moins influent dans le commerce mondial.
+##Les chinois on vous voit là avec vos "acquisitions" à l'américaine
+##Le moyen Orient= pétrole 
+
+Q_echanges<-QLT(Mondial_Exchange,c(2,3),"ind")
+write.table(Q_echanges,"Qual_echanges.csv",sep = "\t")
+Q_echanges
+Mondial_Exchange@CTR
+
+write.table(Tableau_echange,"T_ech.csv")
+Tableau_transition<-c(76.7,7.1,8.7,7.5,0.5,97.2,0.8,1.5,15.9,7.3,54.4,22.4,1,3.8,5.3,89.9)
+trans_name<-c("CDD","CDI","chomage","inactivite")
+Tableau_transition<-matrix(Tableau_transition,4,4)
+row.names(Tableau_transition)<-trans_name
+colnames(Tableau_transition)<-trans_name
+write.table(Tableau_transition,"trtab.csv")
+
+sum(Mondial_Exchange@CTR["Afrique",2:3])
+transit<-AFS_transition(Tableau_transition)
+QLT(transit,c(2,3))
+
+AF_plot(transit,2,3,Title = "Figure 6: AFS de la mobilité professionnelle trimestrielle 2019.")
+QLT_diff
+Hom<-as.matrix()
+CSP_corres@INR
+CSP_corres@INR_du
+CSP_corres@CTR[,1:2]
+
+
+
+
+```
+```{r}
+source("AFS_functions_finale.R")
+PIB<-read.table("PIB.csv",sep="\t",dec=",",header=T,row.names = 1)
+View(PIB)
+dim(PIB_mat_2)
+
+PIB_mat<-as.matrix(PIB[-c(1,13:210),-1])
+CN_PIB<-c("IMPORT","DEP MENAGES","DEP ADMIN PUBLIC","INVEST ENTREPRISES", "INVEST MENAGES","INVEST PUBLIC","DEMANDE INTERNE","VARIATION STOCK","COMMERCE EXT")
+colnames(PIB_mat)<-CN_PIB
+PIB_AF<-AF(Hellingerizer(PIB_mat))
+
+AF_plot(PIB_AF,2,3,choix="both",Title = "AFS du PIB trimestriel Français depuis 2019")
+
+PIB_2<-read.table("PIB_2.csv",sep="\t",dec=",",header = T,row.names = 1)
+PIB_mat_2<-as.matrix(PIB_2[-c(1,13:293),])
+dim(PIB_mat_2)
+
+CN_PIB_2<-c("PIB","IMPORTS","CONSO MENAGES","DEPENSES PUBLICS","INVESTISSMENT INTERNE","EXPORTS")
+colnames(PIB_mat_2)<-CN_PIB_2
+
+PIB_AF_2<-AF(Hellingerizer(turn_to_freq( PIB_mat_2)))
+AF_plot(PIB_AF_2,1,2,"both",Title = "AFS du PIB trimestriel Français depuis 2019")
+ggsave("PIB_AFS.jpg")
+AF_plot(PIB_AF_2,2,3,"both",Title = "AFS plan 2,3 du PIB trimestriel Français depuis 2019")
+sum(PIB_2["2020-T2",-1])
+ggsave("PIB_AFS_2_3.jpg")
+
+Ecart<-c(0.653,3.33,0.763,0.192,8.85-10,8.79-10)
+
+Ecart
+shapiro.test(Ecart)
+
+((12+8.2+11.75)*2+(11.75+10)*5+(12+12.75+5.75)*4)/30
+
+
+
+
+
+
+```
+
